@@ -2,7 +2,9 @@ package repos
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	stdlog "log"
 	"sort"
 	"strconv"
 	"strings"
@@ -81,6 +83,21 @@ func (s *Syncer) Sync(ctx context.Context, kinds ...string) (diff Diff, err erro
 
 	diff = NewDiff(sourced, stored)
 	upserts := s.upserts(diff)
+
+	bs, _ := json.Marshal(sourced)
+	stdlog.Printf("syncer.sync.sourced:\n%s", string(bs))
+
+	bs, _ = json.Marshal(stored)
+	stdlog.Printf("syncer.sync.stored:\n%s", string(bs))
+
+	set := make(map[api.ExternalRepoSpec]Repos, len(upserts))
+	for _, r := range upserts {
+		set[r.ExternalRepo] = append(set[r.ExternalRepo], r)
+		if len(set[r.ExternalRepo]) > 1 {
+			bs, _ := json.MarshalIndent(set[r.ExternalRepo], "", " ")
+			stdlog.Printf("syncer.sync.upserts.duplicates:\n%s", string(bs))
+		}
+	}
 
 	if err = store.UpsertRepos(ctx, upserts...); err != nil {
 		return Diff{}, errors.Wrap(err, "syncer.sync.store.upsert-repos")
