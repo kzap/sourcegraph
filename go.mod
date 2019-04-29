@@ -53,7 +53,7 @@ require (
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.0.0
 	github.com/google/uuid v1.1.0
-	github.com/google/zoekt v0.0.0-20180530125106-8e284ca7e964
+	github.com/google/zoekt v0.0.0-20190429091213-3493be98f11f
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/csrf v1.5.1
 	github.com/gorilla/handlers v1.4.0
